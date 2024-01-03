@@ -1,0 +1,110 @@
+.live-container{
+    width: 100%;
+    padding: 20px 16px;
+    height: calc(100vh - 120px);
+    overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.live-video-contained{
+    width: ;
+    margin: auto;
+    position: relative;
+}
+.live-video-contained video{
+    width: 100%;
+    vertical-align: middle;
+    object-fit: cover;
+    aspect-ratio: 9/16 !important;
+}
+.live-video-comments{
+    position: absolute;
+    bottom: 0;
+    height: fit-content;
+    width: 100%;
+    max-width: 500px;
+    color: #fff !important;
+    padding: 10px;
+}
+.live-video-comments-list{
+    overflow: hidden;
+    height: fit-content;
+    max-height: 200px;
+    overflow-y: scroll;
+    padding-bottom: 10px 0px;
+}
+.live-video-comments-list::-webkit-scrollbar{
+    display: none;
+}
+.live-video-comment{
+    border-radius: 2px;
+    margin: 5px 0px;
+    padding: 8px 10px;
+    background-color: #1d1d1d66;
+}
+.live-video-comment span.sender{
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0px 4px 0px 0px;
+}
+.live-video-comment span.sender-message{
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.live-comments-input{
+    padding: 8px 0px;
+}
+.live-gifts-list{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.live-gifts-list button{
+    padding: 10px;
+    text-align: center;
+    font-size: 30px;
+    color: #ffffff;
+    background-color: #ffffff00;
+    cursor: pointer;
+}
+.live-gifts-list button i{
+    pointer-events: none;
+}
+.live-comments-input input{
+    width: 100%;
+    padding: 10px;
+    background-color: #ffffff66;
+    color: #ffffff;
+    border-radius: 2px;
+}
+.live-comments-input input::placeholder{
+    color: #c1c1c1;
+}
+/* .live-gifting-sect{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+}
+.live-gifting-card{
+    padding: 10px;
+    text-align: center;
+}
+.live-gifting-card button{
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #ffffff33;
+    text-align: center;
+    cursor: pointer;
+}
+.live-gifting-card button i{
+    pointer-events: none;
+}
+.live-gifting-card span{
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+} */

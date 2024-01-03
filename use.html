@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    Strictly use this as I have changed for more clarity.
+class LiveStream(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    livestream_name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    thumbnail = models.ImageField(upload_to='thumbnails/')
+    stream_key = models.CharField(max_length=255, unique=True)
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+
+Now for Setup Django Project that is done I will share my main app views & models for code clarity and clean flow.
+
+main app models:
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='image_uploads/profile_images/', blank=True, null=True)
+    full_name = models.CharField(max_length=255)
+    bio = models.TextField()
+
+    def __str__(self):
+        return self.user.username
+
+class UserFollowing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    followed_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+
+class Video(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.CharField(max_length=10, choices=[('short', 'Short'), ('long', 'Long')])
+    duration = models.PositiveIntegerField(blank=True, null=True)  # Duration in seconds
+    upload_date = models.DateTimeField(auto_now_add=True)
+    thumbnail = models.ImageField(upload_to='main/thumbnails/', blank=True, null=True)
+    custom_thumbnail = models.ImageField(upload_to='main/custom_thumbnails/', blank=True, null=True)
+    file = models.FileField(upload_to='main/uploaded_videos/')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+# Signal to automatically update video category based on duration
+@receiver(pre_save, sender=Video)
+def update_video_category(sender, instance, **kwargs):
+    if instance.duration is not None and instance.duration <= 70:
+        instance.category = 'short'
+    else:
+        instance.category = 'long'
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey('Video', on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.text}'
+
+class UserHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey('Video', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.video.title} - {self.timestamp}'
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.message}'
+
+main app views:
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.decorators import login_required
+from .forms import *
+from .utils import generate_thumbnail
+from django.http import JsonResponse
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from .models import *
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+
+def user_logout(request):
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('home')
+
+def recommended_videos(request):
+    user = request.user
+
+    # Get the user's viewing history
+    user_history = UserHistory.objects.filter(user=user)
+
+    # Extract video IDs from the user's viewing history
+    video_ids = [history.video.id for history in user_history]
+
+    # Get videos watched by the user and exclude them from recommendations
+    watched_videos = Video.objects.filter(id__in=video_ids)
+    
+    # Get recommended videos (exclude watched videos)
+    recommended_videos = Video.objects.exclude(id__in=video_ids)
+
+    return render(request, 'registration/recommended_videos.html', {'watched_videos': watched_videos, 'recommended_videos': recommended_videos})
+
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Welcome back, {username}!')
+                return redirect('home')
+            else:
+                messages.error(request, 'Invalid username or password.')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html', {'form': form})
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        profile_form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid() and profile_form.is_valid():
+            user = form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+        profile_form = UserProfileForm()
+    return render(request, 'registration/signup.html', {'form': form, 'profile_form': profile_form})
+
+@login_required
+def upload_video(request):
+    if request.method == 'POST':
+        form = VideoForm(request.POST, request.FILES)
+        if form.is_valid():
+            video = form.save(commit=False)
+            video.user = request.user
+            video.save()
+
+            # If a custom thumbnail is provided, use it; otherwise, generate a thumbnail from the video
+            if video.custom_thumbnail:
+                video.thumbnail = video.custom_thumbnail
+            else:
+                # Generate and save thumbnail
+                thumbnail_path = f'media/thumbnails/{video.id}.jpg'
+                generate_thumbnail(video.file.path, thumbnail_path)
+                video.thumbnail = thumbnail_path
+
+            video.save()
+
+            return redirect('home')  # Update with your home view name
+    else:
+        form = VideoForm()
+    return render(request, 'registration/upload_video.html', {'form': form})
+
+def home(request):
+    user = request.user
+
+    # Get the list of users the logged-in user is following
+    following_users = []
+    if user.is_authenticated:
+        following_users = UserFollowing.objects.filter(user=user).values_list('followed_user__username', flat=True)
+
+    short_videos = Video.objects.filter(category='short')
+    long_videos = Video.objects.filter(category='long')
+    return render(request, 'registration/home.html', {'short_videos': short_videos, 'long_videos': long_videos, 'following_users': following_users})
+
+def account_page(request, username):
+    user = get_object_or_404(User, username=username)
+
+    uploaded_videos = Video.objects.filter(user=user)
+    short_videos = Video.objects.filter(user=user, category='short')
+    # liked_videos = user.userprofile.liked_videos.all()
+
+    return render(request, 'registration/account.html', {'user': user, 'uploaded_videos': uploaded_videos, 'short_videos': short_videos }) #'liked_videos': liked_videos
+
+@login_required
+def follow_user(request, username):
+    user_to_follow = get_object_or_404(User, username=username)
+    user = request.user
+
+    # Check if the user is not trying to follow themselves
+    if user != user_to_follow:
+        # Check if the user is not already following the target user
+        if not UserFollowing.objects.filter(user=user, followed_user=user_to_follow).exists():
+            # Create a new UserFollowing entry
+            UserFollowing.objects.create(user=user, followed_user=user_to_follow)
+
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'already_following'})
+    else:
+        return JsonResponse({'status': 'cannot_follow_yourself'})
+
+def view_video(request, video_id):
+    video = get_object_or_404(Video, id=video_id)
+    return render(request, 'registration/view_video.html', {'video': video})
+
+@login_required
+def notifications(request):
+    user = request.user
+
+    # Get unread notifications for the user
+    unread_notifications = Notification.objects.filter(user=user, is_read=False)
+
+    # Mark unread notifications as read
+    unread_notifications.update(is_read=True)
+
+    return render(request, 'registration/notifications.html', {'notifications': unread_notifications})
+
+@login_required
+def user_settings(request):
+    user_profile = request.user.userprofile
+
+    if request.method == 'POST':
+        user_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+
+        if user_form.is_valid():
+            user_form.save()
+
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('user_settings')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        user_form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'registration/user_settings.html', {'user_form': user_form})
+
+def short_video_scroll_page(request, video_id=None):
+    short_videos = Video.objects.filter(category='short')
+
+    if video_id:
+        clicked_video = get_object_or_404(Video, id=video_id, category='short')
+    else:
+        clicked_video = short_videos.first()
+
+    return render(request, 'registration/shorts.html', {'short_videos': short_videos, 'clicked_video': clicked_video})
+
+Lets now move to step two(Integrate AWS MediaLive) which you will help from start to finish.
+</body>
+</html>
+
+my project structure:
+myproject/
+|-- manage.py
+|-- myproject/
+|   |-- __init__.py
+|   |-- settings.py
+|   |-- urls.py
+|   |-- asgi.py
+|   `-- wsgi.py
+|-- livestream/
+|   |-- migrations/
+|   |   `-- __init__.py
+|   |-- __init__.py
+|   |-- admin.py
+|   |-- apps.py
+|   |-- models.py
+|   |-- tests.py
+|   `-- views.py
+|-- main/
+|   |-- migrations/
+|   |   `-- __init__.py
+|   |-- __init__.py
+|   |-- admin.py
+|   |-- apps.py
+|   |-- models.py
+|   |-- tests.py
+|   `-- views.py
+
+Using Django I want to build a youtube/instagram/facebook like system with livestreaming featur.
+This for my client and here is is request that will help in the build and you should keep in mind:"A robust live streaming module using Python, Django, and WebSockets for real-time data flow.
+The use of FFmpeg will ensure seamless media processing to handle various formats.
+Using RTMP/HLS protocols, I can ensure efficient transport and delivery of streaming content.
+Livestream system
+I have already done User login, logout, profile(image, full names, email, bio), register with username, email & password. So now we focus on the livestreaming app only. 
+
+So user will create a live stream, name it, as description if there, upload a thumbnail so that it can be viewed even when it has ended.  
+
+Another thing is I have gifts 5 Augmented reality and 5 3d animations. So basically the UI will have button for this 10 gifts, also a likes & comments. 
+
+The ui will look this way: Viewer can send comments, send gifts, and likes. Now other viewers can see in the screen/video the comments, likes and gifts going up and disappearing this all happening like it is one with the video/or like it is on the video not on the side.
+
+Also the streamer can see the same things but he is the recipient. He cannot send gifts. He only sees what is happening. 
+
+Do whatever is best that will in the end be a success, as I do not know how to code well I will be pasting and testing. 
+
+Als what you may need to know about the other main app so that you can use when creating the contents of this livestream django app.
+
+
+Now for Setup Django Project that is done I will share my main app views & models for code clarity and clean flow.
+
+main app models:
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='image_uploads/profile_images/', blank=True, null=True)
+    full_name = models.CharField(max_length=255)
+    bio = models.TextField()
+
+    def __str__(self):
+        return self.user.username
+
+class UserFollowing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    followed_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+
+class Video(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.CharField(max_length=10, choices=[('short', 'Short'), ('long', 'Long')])
+    duration = models.PositiveIntegerField(blank=True, null=True)  # Duration in seconds
+    upload_date = models.DateTimeField(auto_now_add=True)
+    thumbnail = models.ImageField(upload_to='main/thumbnails/', blank=True, null=True)
+    custom_thumbnail = models.ImageField(upload_to='main/custom_thumbnails/', blank=True, null=True)
+    file = models.FileField(upload_to='main/uploaded_videos/')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+# Signal to automatically update video category based on duration
+@receiver(pre_save, sender=Video)
+def update_video_category(sender, instance, **kwargs):
+    if instance.duration is not None and instance.duration <= 70:
+        instance.category = 'short'
+    else:
+        instance.category = 'long'
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey('Video', on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.text}'
+
+class UserHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey('Video', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.video.title} - {self.timestamp}'
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.message}'
+
+main app views:
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.decorators import login_required
+from .forms import *
+from .utils import generate_thumbnail
+from django.http import JsonResponse
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from .models import *
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+
+def user_logout(request):
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('home')
+
+def recommended_videos(request):
+    user = request.user
+
+    # Get the user's viewing history
+    user_history = UserHistory.objects.filter(user=user)
+
+    # Extract video IDs from the user's viewing history
+    video_ids = [history.video.id for history in user_history]
+
+    # Get videos watched by the user and exclude them from recommendations
+    watched_videos = Video.objects.filter(id__in=video_ids)
+    
+    # Get recommended videos (exclude watched videos)
+    recommended_videos = Video.objects.exclude(id__in=video_ids)
+
+    return render(request, 'registration/recommended_videos.html', {'watched_videos': watched_videos, 'recommended_videos': recommended_videos})
+
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Welcome back, {username}!')
+                return redirect('home')
+            else:
+                messages.error(request, 'Invalid username or password.')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html', {'form': form})
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        profile_form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid() and profile_form.is_valid():
+            user = form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+        profile_form = UserProfileForm()
+    return render(request, 'registration/signup.html', {'form': form, 'profile_form': profile_form})
+
+@login_required
+def upload_video(request):
+    if request.method == 'POST':
+        form = VideoForm(request.POST, request.FILES)
+        if form.is_valid():
+            video = form.save(commit=False)
+            video.user = request.user
+            video.save()
+
+            # If a custom thumbnail is provided, use it; otherwise, generate a thumbnail from the video
+            if video.custom_thumbnail:
+                video.thumbnail = video.custom_thumbnail
+            else:
+                # Generate and save thumbnail
+                thumbnail_path = f'media/thumbnails/{video.id}.jpg'
+                generate_thumbnail(video.file.path, thumbnail_path)
+                video.thumbnail = thumbnail_path
+
+            video.save()
+
+            return redirect('home')  # Update with your home view name
+    else:
+        form = VideoForm()
+    return render(request, 'registration/upload_video.html', {'form': form})
+
+def home(request):
+    user = request.user
+
+    # Get the list of users the logged-in user is following
+    following_users = []
+    if user.is_authenticated:
+        following_users = UserFollowing.objects.filter(user=user).values_list('followed_user__username', flat=True)
+
+    short_videos = Video.objects.filter(category='short')
+    long_videos = Video.objects.filter(category='long')
+    return render(request, 'registration/home.html', {'short_videos': short_videos, 'long_videos': long_videos, 'following_users': following_users})
+
+def account_page(request, username):
+    user = get_object_or_404(User, username=username)
+
+    uploaded_videos = Video.objects.filter(user=user)
+    short_videos = Video.objects.filter(user=user, category='short')
+    # liked_videos = user.userprofile.liked_videos.all()
+
+    return render(request, 'registration/account.html', {'user': user, 'uploaded_videos': uploaded_videos, 'short_videos': short_videos }) #'liked_videos': liked_videos
+
+@login_required
+def follow_user(request, username):
+    user_to_follow = get_object_or_404(User, username=username)
+    user = request.user
+
+    # Check if the user is not trying to follow themselves
+    if user != user_to_follow:
+        # Check if the user is not already following the target user
+        if not UserFollowing.objects.filter(user=user, followed_user=user_to_follow).exists():
+            # Create a new UserFollowing entry
+            UserFollowing.objects.create(user=user, followed_user=user_to_follow)
+
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'already_following'})
+    else:
+        return JsonResponse({'status': 'cannot_follow_yourself'})
+
+def view_video(request, video_id):
+    video = get_object_or_404(Video, id=video_id)
+    return render(request, 'registration/view_video.html', {'video': video})
+
+@login_required
+def notifications(request):
+    user = request.user
+
+    # Get unread notifications for the user
+    unread_notifications = Notification.objects.filter(user=user, is_read=False)
+
+    # Mark unread notifications as read
+    unread_notifications.update(is_read=True)
+
+    return render(request, 'registration/notifications.html', {'notifications': unread_notifications})
+
+@login_required
+def user_settings(request):
+    user_profile = request.user.userprofile
+
+    if request.method == 'POST':
+        user_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+
+        if user_form.is_valid():
+            user_form.save()
+
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('user_settings')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        user_form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'registration/user_settings.html', {'user_form': user_form})
+
+def short_video_scroll_page(request, video_id=None):
+    short_videos = Video.objects.filter(category='short')
+
+    if video_id:
+        clicked_video = get_object_or_404(Video, id=video_id, category='short')
+    else:
+        clicked_video = short_videos.first()
+
+    return render(request, 'registration/shorts.html', {'short_videos': short_videos, 'clicked_video': clicked_video})
+
+
+
+
