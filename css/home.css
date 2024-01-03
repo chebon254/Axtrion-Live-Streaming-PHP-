@@ -1,0 +1,126 @@
+.home-container{
+    padding: 20px 0px;
+}
+.home-videos{
+    flex-grow: 2;
+}
+.video-content{
+    align-items: stretch !important;
+    justify-content: flex-start;
+}
+.side-nav{
+ width: fit-content;
+ padding: 10px 0px;
+}
+.side-nav a{
+    padding: 10px;
+    border-radius: 10px;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary);
+}
+.side-nav a:hover{
+    background-color: var(--active-trans);
+    color: var(--active);
+}
+.side-nav a i{
+    font-size: 18px;
+}
+
+.video-content .video{
+    height: fit-content;
+    width: 100%;
+    max-width: 348px;
+    margin: 10px;
+}
+.video .thumbnail{
+    width: 100%;
+    position: relative;
+}
+.video .video-duration{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 1px 2px;
+    border-radius: 2px;
+    background-color: var(--primary);
+    color: var(--white);
+}
+.video .thumbnail img{
+    aspect-ratio: 16/9;
+    width: 100%;
+    vertical-align: middle;
+    border-radius: 10px;
+}
+.video-detail{
+    padding: 10px 0px;
+}
+.video-detail .left{
+    max-width: fit-content;
+    padding: 0px 10px 0px 0px;
+}
+.video-detail .left img{
+    height: 45px;
+    width: 45px;
+    border-radius: 22.5px;
+}
+.channel-name{
+    font-weight: 5ss00;
+    padding: 5px 0px;
+}
+.time-views{
+    padding: 5px 0px;
+    font-size: 14px;
+    font-weight: 400;
+}
+.shorts-content{
+    padding: 20px 0px 40px;
+}
+.shorts-content-title{
+    padding: 20px 0px 10px;
+}
+.short-contents-videos{
+    overflow: hidden;
+    align-items: stretch !important;
+    justify-content: flex-start;
+}
+.short-contents-videos::-webkit-scrollbar{
+    display: none;
+}
+.short-video{
+    height: fit-content;
+    width: 200px;
+    margin: 10px;
+}
+.short-thumbnail{
+    height: 360px;
+    width: 100%;
+    max-width: 200px;
+}
+.short-thumbnail img{
+    border-radius: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+.short-details{
+    padding: 10px 0px;
+    color: var(--primary);
+}
+.short-details span{
+    font-size: 14px;
+    color: var(--primary);
+}
+a.see-all-link{
+    border-radius: 4px;
+    padding: 10px 40px;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    font-size: 14px;
+    font-weight: 500;
+}
+a.see-all-link:hover{
+    color: var(--active);
+    border: 1px solid var(--active);
+}

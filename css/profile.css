@@ -1,0 +1,100 @@
+.account-container{
+    max-width: 1200px;
+    margin: auto;
+    width: 100%;
+    padding: 20px 10px;
+}
+.account-info{
+    padding: 10px 0px 20px;
+}
+.acc-profile-image{
+    padding: 0px 20px 0px 0px;
+}
+.acc-profile-image img{
+    height: 100px;
+    width: 100px;
+    border-radius: 50px;
+}
+.account-profile-follow p{
+    margin: 0px 0px 10px;
+    width: 100%;
+    max-width: 400px;
+}
+.account-profile-follow .followers{
+    font-size: 14px;
+}
+button.btn-edit-profile{
+    padding: 10px 20px;
+    margin: 20px 0px 0px;
+    cursor: pointer;
+    background-color: var(--active);
+    border-radius: 2px;
+    color: var(--white);
+}
+
+.profile-acc-tabs {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.profile-acc-tab {
+    width: 100px;
+  padding: 10px;
+  text-align: center;
+  background-color: var(--white);
+  cursor: pointer;
+}
+.profile-acc-tab.active, .profile-acc-tab:hover {
+    color: var(--active);
+    background-color: var(--active-trans);
+}
+
+.profile-acc-tab-content {
+  display: none;
+  padding: 10px;
+}
+
+.active-profile-acc-tab {
+  background-color: #ccc;
+}
+
+.active-profile-acc-content {
+  display: block;
+}
+
+
+.account-short-details{
+    padding: 0px 0px;
+    align-items: center;
+    justify-content: flex-start;
+}
+.short-thumbnail.account, .thumbnail.account{
+    position: relative;
+}
+.play-button{
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--white);
+}
+.play-button span{
+    padding: 0px 10px;
+    font-weight: 500;
+}
+.account-short-details .card{
+    height: 30px;
+    width: 50px;
+    margin-right: 10px;
+    text-align: center;
+    padding: 0px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+.account-short-details .card span.text{
+    font-size: 12px;
+    font-weight: 500;
+    padding: 0px 10px;
+}

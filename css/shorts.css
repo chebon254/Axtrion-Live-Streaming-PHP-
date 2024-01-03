@@ -1,7 +1,7 @@
 .shorts-container {
   padding: 10px 16px;
   justify-content: center;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 104px);
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
 }

@@ -1,400 +1,489 @@
 * {
-  text-decoration: none;
-  margin: 0px;
-  padding: 0px;
-  box-sizing: border-box;
-  outline: none;
-  border: 0;
-  font-family: "Roboto", sans-serif;
-}
-body {
-  background-color: #ffffff;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    outline: none !important;
+    font-family: "Montserrat", sans-serif;
 }
 
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: auto !important;
+html {
+    scroll-behavior: smooth;
 }
 
+:root {
+    --primary: #1d1d1d;
+    --secondary: #adadad;
+    --active: #ff1e56;
+    --active-trans: #ff1e5620;
+    --white: #ffffff;
+}
+
+/* == SCROLL BAR == */
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background-color: var(--primary);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--active);
+}
+
+/* Animation CSS */
+@keyframes bottomReveal {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.reveal-fixed {
+    transition: 2s all ease;
+    animation: bottomReveal 2000ms forwards;
+}
+
+.reveal {
+    position: relative;
+    transform: translateY(50px);
+    opacity: 0;
+    transition: 2s all ease;
+}
+
+/* == || SCROLL BAR == */
+
+/* == Nav Bar == */
 nav {
-  height: fit-content;
-  width: 100%;
-  background-color: #1d1d1d;
-  padding: 20px 0px;
+    padding: 10px 0px;
+    background-color: var(--primary);
 }
-.nav-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0px 16px;
+
+.nav-pg-link a,
+.nav-ac-access a {
+    color: var(--white);
+    padding: 4px 8px;
 }
-.nav-links-account {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+
+.nav-pg-link a:hover,
+.nav-ac-access a:hover {
+    color: var(--secondary);
 }
-.nav-links {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+
+.nav-ac-profile {
+    padding: 0px 0px 0px 20px;
 }
-.nav-links a {
-  padding: 0px 10px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #ffffff;
-}
-.nav-account-access {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0px 0px 0px 20px;
-}
-.nav-account-access a {
-  font-size: 16px;
-  font-weight: 500;
-  color: #ffffff;
-  padding: 5px 10px;
-}
-.nav-account-access a:hover {
-  color: #ff1e56;
-}
+
 .notification-bell {
-  position: relative;
-  font-size: 20px;
-  color: #ffffff;
+    position: relative;
+    font-size: 20px;
+    color: #ffffff;
 }
+
 .notifcation-status {
-  height: 10px;
-  width: 10px;
-  border-radius: 5px;
-  background-color: #ff1e56;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-}
-.profile {
-  height: 60px;
-  width: 60px;
-  margin: 0px 10px;
-}
-.profile img {
-  height: 60px;
-  width: 60px;
-  border-radius: 30px;
+    height: 10px;
+    width: 10px;
+    border-radius: 5px;
+    background-color: var(--active);
+    position: absolute;
+    top: 0px;
+    right: 0px;
 }
 
-.main-container {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-wrap: wrap;
-  background-color: #ffffff;
-  padding: 20px 16px;
+.profile-drop {
+    position: relative;
 }
 
-.video-stream {
-  height: fit-content;
-  width: 100%;
-  max-width: 380px;
-  min-width: 280px;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #ffffff;
-  margin: 10px;
-}
-.creator {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0px 0px 10px;
-}
-.video-profile {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.video-profile img {
-  height: 60px;
-  width: 60px;
-  border-radius: 30px;
-}
-.creator-following {
-  width: 120px;
-  padding: 0px 10px 0px;
-}
-.creator-following span.one {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1d1d1d;
-}
-.creator-following span.two {
-  font-size: 12px;
-  font-weight: 400;
-  color: #1d1d1d;
-}
-.follow-btn button {
-  height: 40px;
-  width: 120px;
-  border-radius: 2px;
-  background-color: #ff1e56;
-  font-size: 14px;
-  font-weight: 500;
-  color: #ffffff;
-  cursor: pointer;
+.profile-drop .profile {
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    overflow: hidden;
+    margin: 0px 10px;
+    background-color: #f1f1f100;
 }
 
-.thumbnail {
-  max-height: 200px;
-  max-width: 360px;
-  width: 100%;
-  margin: auto;
-  position: relative;
-  display: block;
-}
-.video-container {
-  position: relative;
-}
-.live-status {
-  padding: 5px 20px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: #ffffff;
-  background-color: #ff1e56;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  border: 0px;
-}
-.thumbnail img {
-  max-height: 200px;
-  max-width: 360px;
-  width: 100%;
-  border-radius: 16px;
-  margin: auto;
-}
-h3.video-title {
-  font-size: 18px;
-  font-weight: 500;
-  color: #1d1d1d;
-  margin: 10px 0px;
-}
-h4.video-time {
-  font-size: 12px;
-  font-weight: 400;
-  color: #1d1d1d;
-}
-.video-data {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px 0px 0px;
-}
-.vid-data {
-  text-align: center;
-  margin: 0px 5px 0px 0px;
-}
-.vid-data span.icon {
-  background-color: #fafafa;
-  height: 40px;
-  width: 40px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.vid-data span.text {
-  font-size: 12px;
-  font-weight: 400;
-  color: #1d1d1d;
+/* Style the dropdown button */
+.profile-drop .dropbtn {
+    height: 60px;
+    width: 60px;
+    margin: 0px 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
 }
 
-.video-page {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-.video-content {
-  width: 100%;
-  max-width: 960px;
-}
-.video-content video {
-  aspect-ratio: 16/9;
-  width: 100%;
-}
-.video-comments {
-  width: 100%;
-  max-width: 280px;
-  padding: 0px 10px 10px;
-}
-.video-comments .comment {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 10px 0px;
+/* Style the dropdown content (hidden by default) */
+.profile-drop .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--white);
+    padding: 10px;
+    min-width: 160px;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    right: 0px;
+    border-radius: 10px;
 }
 
-.comment .text {
-  display: block;
-  padding: 0px 10px;
-}
-.comment .text span {
-  display: block;
-}
-.comment .text span.name {
-  font-size: 16px;
-  font-weight: 500;
-  color: #1d1d1d;
-}
-.comment .text span.message {
-  font-size: 14px;
-  font-weight: 400;
-  color: #1d1d1d;
+/* Style the links inside the dropdown */
+.profile-drop .dropdown-content a {
+    border-radius: 10px;
+    color: var(--primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
 }
 
-.video-view-details h3.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1d1d1d;
-  margin: 10px 0px 0px;
-}
-.video-view-details p {
-  font-size: 14spx;
-  font-weight: 400;
-  color: #555555;
-  margin: 6px 0px 0px;
+/* Change color on hover */
+.profile-drop .dropdown-content a:hover {
+    background-color: var(--active-trans);
+    color: var(--active);
 }
 
-.viewage {
-  padding: 0px 0px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* Show the dropdown menu on hover */
+.profile-drop:hover .dropdown-content {
+    display: block;
 }
 
-.vid-data.video-view {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-left: 10px;
+.profile-drop .profile img {
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
 }
 
-.vid-data.video-view span.icon {
-  background-color: #ff1e56;
-  color: #ffffff;
-  height: 40px;
-  width: 40px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.add-comment {
-  height: fit-content;
-  width: 100%;
-  padding: 20px 0px 0px;
-  position: relative;
-}
-.add-comment input {
-  border: 1px solid #dddddd;
-  width: 100%;
-  height: 40px;
-  padding: 0px 50px 0px 10px;
-}
-.btn-comment {
-  position: absolute;
-  right: 10px;
-  top: 30px;
-  font-size: 20px;
-  color: #ff1e56;
-  background-color: #1d1d1d00;
-}
-.emojis {
-  position: absolute;
-  right: 40px;
-  top: 30px;
-  font-size: 20px;
-  color: #555555;
+main {
+    padding: 0px 0px;
 }
 
 /* == Login & Register Pages == */
-.form-container{
-  padding: 20px 0px;
+.form-container {
+    padding: 0px 0px;
 }
+
 .form {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    height: 100vh;
+    padding: 20px 0px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .form form {
-  width: 100%;
-  max-width: 500px;
-  min-width: 280px;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px;
+    width: 100%;
+    max-width: 500px;
+    min-width: 280px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px;
 }
+
 .form-control {
-  padding: 10px 0px;
-  width: 100%;
+    padding: 10px 0px;
+    width: 100%;
 }
 
 .form-control h1 {
-  color: #1d1d1d;
+    color: #1d1d1d;
 }
+
 .form-control p {
-  margin: 10px 0px 0px;
-  font-weight: 500;
-  color: #1d1d1d;
+    margin: 10px 0px 0px;
+    font-weight: 500;
+    color: #1d1d1d;
 }
+
 p.account-related {
-  text-align: center !important;
+    text-align: center !important;
 }
+
 p.account-related a {
-  padding: 0px 4px;
-  color: #945b69;
+    padding: 0px 4px;
+    color: #945b69;
 }
+
 p.account-related a:hover {
-  color: #ff1e56;
+    color: #ff1e56;
 }
+
 .form-control label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1d1d1d;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1d1d1d;
 }
 
 .form-control input {
-  height: 50px;
-  width: 100%;
-  outline: none;
-  border: 1px solid #f2f0f9;
-  font-size: 14px;
-  font-weight: 500;
-  color: #1d1d1d;
-  border-radius: 16px;
-  padding: 0px 16px;
+    height: 50px;
+    width: 100%;
+    outline: none;
+    border: 1px solid #f2f0f9;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1d1d1d;
+    border-radius: 16px;
+    padding: 0px 16px;
+}
+
+.form-control textarea {
+    height: 120px;
+    width: 100%;
+    outline: none;
+    border: 1px solid #f2f0f9;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1d1d1d;
+    border-radius: 16px;
+    padding: 10px 16px;
+}
+.form p.error{
+    color: var(--active);
 }
 
 .form button {
-  height: 50px;
-  width: 100%;
-  outline: none;
-  border: 1px solid #f2f0f9;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1d1d1d;
-  border-radius: 10px;
-  padding: 0px 16px;
-  background-color: #f2f0f9;
+    height: 50px;
+    width: 100%;
+    outline: none;
+    border: 1px solid #f2f0f9;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d1d1d;
+    border-radius: 10px;
+    padding: 0px 16px;
+    background-color: #f2f0f9;
 }
+
 .form button:hover {
-  background-color: #ff1e56;
-  color: #ffffff;
+    background-color: #ff1e56;
+    color: #ffffff;
 }
+
 /* == || Login & Register Pages == */
+
+.settings-container,
+.video-container {
+    padding: 20px 10px !important;
+}
+
+.watch-video {
+    width: 100%;
+}
+
+.watch-video-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    /* 16:9 aspect ratio (9 / 16 * 100) */
+    overflow: hidden;
+}
+
+.watch-video video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+    background-color: #000000;
+}
+
+.watch-video-detail {
+    width: 100%;
+}
+
+.top-watch-detail {
+    width: 100%;
+    max-width: 700px;
+    padding: 20px 0px;
+    align-items: flex-start;
+    justify-content: space-between !important;
+}
+
+.top-watch-detail h2 {
+    width: 100%;
+}
+
+.top-watch-detail .video-account {
+    width: fit-content;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.top-watch-detail .video-account .card {
+    margin: 0px 10px 0px 0px;
+}
+
+.top-watch-detail .video-account span.icon {
+    font-size: 18px;
+}
+
+.top-watch-detail .video-account span.text {
+    font-size: 16px;
+    padding: 0px 2px;
+}
+
+.watch-video-ownership {
+    padding: 10px 0px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.watch-video-ownership img {
+    height: 45px;
+    width: 45px;
+    border-radius: 22.5px;
+    margin-right: 10px;
+}
+
+.watch-video-ownership span {
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+.watch-video-ownership button {
+    height: 50px;
+    width: 160px;
+    outline: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    border-radius: 10px;
+    padding: 0px 16px;
+    background-color: var(--active);
+}
+
+.watch-video-desc {
+    width: 100%;
+    max-width: 700px;
+    background-color: #1d1d1d33;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.watch-video-desc p {
+    line-height: 22px;
+}
+
+.watch-video-comments-title {
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.watch-video-comments-title span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1d;
+}
+
+.watch-video-comments-list {
+    width: 100%;
+    max-width: 700px;
+    height: 100%;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.watch-video-comments-list::-webkit-scrollbar {
+    display: none;
+}
+
+.watch-video-comment,
+.watch-video-reply-comment-form,
+.watch-video-comment-form {
+    padding: 10px 0px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.watch-video-comment .watch-video-left,
+.watch-video-comment .watch-video-left img,
+.watch-video-comment-form .watch-video-left,
+.watch-video-comment-form .watch-video-left img {
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+}
+
+.watch-video-comment .watch-video-right,
+.watch-video-comment-form .watch-video-right {
+    padding: 0px 10px;
+    flex-grow: 2;
+}
+
+.watch-video-comment .watch-video-right h4 {
+    margin: 0px 0px 4px;
+}
+
+.watch-video-comment .watch-video-right p {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 4px 0px 8px;
+}
+
+.watch-video-comment-interaction {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 4px 0px 4px;
+}
+
+.watch-video-comm-inter-cell {
+    padding: 4px;
+}
+
+.watch-video-comm-inter-cell button {
+    background-color: #ffffff00;
+}
+
+.watch-video-reply-comment-button {
+    padding: 4px 10px;
+    border-radius: 4px;
+    background-color: #1d1d1d33 !important;
+    cursor: pointer;
+}
+
+.watch-video-reply-comment-form {
+    display: none;
+}
+
+.watch-video-reply-comment-form .watch-video-right input {
+    padding: 4px 0px;
+    width: 100%;
+    border-bottom: 1px solid #555555;
+}
+
+.watch-video-comment-form-control {
+    padding: 4px 0px;
+}
+
+.watch-video-reply-comment-form .watch-video-right button,
+.watch-video-reply-comment-form .watch-video-right span.watch-video-cancel-comment-reply {
+    padding: 4px 10px;
+    border-radius: 4px;
+    background-color: #1d1d1d33 !important;
+    cursor: pointer;
+}
+
+.watch-video-comment-form {
+    padding: 10px;
+    background-color: #ffffff;
+    width: 100%;
+}

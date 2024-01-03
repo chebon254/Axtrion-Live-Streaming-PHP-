@@ -1,0 +1,28 @@
+.container{
+    margin: auto;
+    width: 100%;
+    padding: 0px 10px;
+}
+
+.flex{
+    display: flex;
+}
+
+.fl-bt{
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-center{
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-start{
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.flex-wrap{
+    flex-wrap: wrap;
+}
