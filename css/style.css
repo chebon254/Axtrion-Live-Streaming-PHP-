@@ -270,6 +270,27 @@ p.account-related a:hover {
     color: #ffffff;
 }
 
+.choice_video_upload{
+    width: 300px;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px;
+}
+.choice_video_upload h2{
+    margin: 0px 0px 2px;
+}
+.upload_type{
+    width: 100%;
+    height: fit-content;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.upload_type a{
+    padding: 10px 20px;
+    border-radius: 2px;
+    color: var(--active);
+    border: 1px solid var(--active);
+}
 /* == || Login & Register Pages == */
 
 .settings-container,

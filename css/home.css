@@ -91,13 +91,12 @@
 }
 .short-video{
     height: fit-content;
-    width: 200px;
+    width: 280px;
     margin: 10px;
 }
 .short-thumbnail{
     height: 360px;
     width: 100%;
-    max-width: 200px;
 }
 .short-thumbnail img{
     border-radius: 10px;

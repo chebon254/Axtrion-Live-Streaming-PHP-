@@ -43,8 +43,8 @@
             </div>
             <div class="links flex fl-bt">
                 <div class="nav-pg-link flex fl-bt">
-                    <!-- <a href="#">Home</a>
-                    <a href="#">Services</a> -->
+                    <!-- <a href="#">Home</a>  -->
+                    <a href="shorts_videos.php">Shorts</a>
                 </div>
                 <div class="nav-ac-access flex fl-bt">
                 <?php

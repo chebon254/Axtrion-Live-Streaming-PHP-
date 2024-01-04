@@ -1,6 +1,40 @@
 <?php
 session_start();
 include('header.php');
+include('Database/database.php');
+function time_elapsed_string($datetime, $full = false)
+{
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) {
+        $string = array_slice($string, 0, 1);
+    }
+
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
 ?>
 <main>
     <div class="home-container container flex flex-start">
@@ -18,314 +52,60 @@ include('header.php');
         </div>
         <div class="home-videos">
             <div class="video-content flex flex-wrap">
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/Dark Grey Minimalist Photo Travel YouTube Thumbnail.png" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/Yellow & Black Earn Money YouTube Thumbnail.png" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online and become</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/Dodge.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/mustang thumb.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/r34 thumb.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online and become</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/R34 thumbnail.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php
+                // Fetch and display long videos
+                $longVideosQuery = "SELECT * FROM long_videos";
+                $longVideosResult = $conn->query($longVideosQuery);
+
+                while ($video = $longVideosResult->fetch_assoc()) {
+                    echo '<div class="video">';
+                    echo '<a href="video.php?id=' . $video['id'] . '" class="thumbnail">';
+                    echo '<img src="' . $video['thumbnail_path'] . '" alt="' . $video['title'] . '">';
+                    echo '<div class="video-duration"><span>3:56</span></div>';
+                    echo '</a>';
+                    echo '<div class="video-detail flex flex-start">';
+                    echo '<div class="left">';
+                    echo '<img src="css/media/Images/profile.jpg" alt="">';
+                    echo '</div>';
+                    echo '<div class="right">';
+                    echo '<h3>' . $video['title'] . '</h3>';
+                    echo '<span class="channel-name">Kelvin</span>';
+                    echo '<div class="time-views">';
+                    // echo '<span class="views">' . $video['views'] . ' Views</span>';
+                    echo '<span class="time-uploaded"> ' . time_elapsed_string($video['created_at']) . '</span>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+                ?>
             </div>
             <div class="shorts-content">
                 <div class="shorts-content-title">
                     <h4><span><i class="fa-solid fa-film"></i></span> Shorts</h4>
                 </div>
                 <div class="short-contents-videos flex">
-                    <div class="short-video">
-                        <div class="short-thumbnail">
-                            <img src="css/media/Images/Thumbnails/Shorts/apocalypse.jpg" alt="Axtrion">
-                        </div>
-                        <div class="short-details">
-                            <h3>Welcome to music #music #art #science</h3>
-                            <span>5.5M views</span>
-                        </div>
-                    </div>
-                    <div class="short-video">
-                        <div class="short-thumbnail">
-                            <img src="css/media/Images/Thumbnails/Shorts/joe jackson.jpg" alt="Axtrion">
-                        </div>
-                        <div class="short-details">
-                            <h3>Welcome to music #music #art #science</h3>
-                            <span>5.5M views</span>
-                        </div>
-                    </div>
-                    <div class="short-video">
-                        <div class="short-thumbnail">
-                            <img src="css/media/Images/Thumbnails/Shorts/oardefault.jpg" alt="Axtrion">
-                        </div>
-                        <div class="short-details">
-                            <h3>Welcome to music #music #art #science</h3>
-                            <span>5.5M views</span>
-                        </div>
-                    </div>
-                    <div class="short-video">
-                        <div class="short-thumbnail">
-                            <img src="css/media/Images/Thumbnails/Shorts/apocalypse.jpg" alt="Axtrion">
-                        </div>
-                        <div class="short-details">
-                            <h3>Welcome to music #music #art #science</h3>
-                            <span>5.5M views</span>
-                        </div>
-                    </div>
-                    <div class="short-video">
-                        <div class="short-thumbnail">
-                            <img src="css/media/Images/Thumbnails/Shorts/joe jackson.jpg" alt="Axtrion">
-                        </div>
-                        <div class="short-details">
-                            <h3>Welcome to music #music #art #science</h3>
-                            <span>5.5M views</span>
-                        </div>
-                    </div>
+                    <?php
+                    // Fetch and display short videos
+                    $shortVideosQuery = "SELECT * FROM short_videos";
+                    $shortVideosResult = $conn->query($shortVideosQuery);
+
+                    while ($short = $shortVideosResult->fetch_assoc()) {
+                        echo '<div class="short-video">';
+                        // Use a placeholder image for the snapshot
+                        echo '<a href="shorts_videos.php?id=' . $short['id'] . '" class="thumbnail">';
+                        echo '<img src="get_snapshot.php?video_path=' . $short['file_path'] . '" alt="' . $short['description'] . '">';
+                        echo '</a>';
+                        echo '<div class="short-details">';
+                        echo '<h3>' . $short['title'] . '</h3>';
+                        echo '<span>2 views</span>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    ?>
                 </div>
                 <div class="shorts-content-title">
-                    <a href="shorts.html" class="see-all-link">See All</a>
-                </div>
-            </div>
-            <div class="video-content flex flex-wrap">
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/Dark Grey Minimalist Photo Travel YouTube Thumbnail.png" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/Yellow & Black Earn Money YouTube Thumbnail.png" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online and become</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/Dodge.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/mustang thumb.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/r34 thumb.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online and become</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="video">
-                    <a href="video.html" class="thumbnail">
-                        <img src="css/media/Images/Thumbnails/videos/R34 thumbnail.PNG" alt="Axtrion">
-                        <div class="video-duration">
-                            <span>3:46</span>
-                        </div>
-                    </a>
-                    <div class="video-detail flex flex-start">
-                        <div class="left">
-                            <img src="css/media/Images/profile.jpg" alt="Axtrion">
-                        </div>
-                        <div class="right">
-                            <h3>How to make money online</h3>
-                            <span class="channel-name">Dennis</span>
-                            <div class="time-views">
-                                <span class="views">234K Veiws</span>
-                                <span class="time-uploaded">2 hours ago</span>
-                            </div>
-                        </div>
-                    </div>
+                    <a href="shorts.php" class="see-all-link">See All</a>
                 </div>
             </div>
         </div>

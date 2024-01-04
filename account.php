@@ -24,21 +24,21 @@ if ($user_result->num_rows == 1) {
     exit();
 }
 
-// Fetch user's uploaded videos
-$uploaded_videos_query = "SELECT * FROM videos WHERE user_id = $user_id";
-$uploaded_videos_result = $conn->query($uploaded_videos_query);
+// Fetch user's videos
+$videos_query = "SELECT * FROM long_videos WHERE user_id = $user_id";
+$videos_result = $conn->query($videos_query);
 
-// Fetch user's shorts (videos under or equal to 60 seconds)
-$shorts_videos_query = "SELECT * FROM videos WHERE user_id = $user_id AND duration <= 60";
-$shorts_videos_result = $conn->query($shorts_videos_query);
-
-// Fetch user's long videos (videos over 60 seconds)
-$long_videos_query = "SELECT * FROM videos WHERE user_id = $user_id AND duration > 60";
-$long_videos_result = $conn->query($long_videos_query);
-
-// Close the database connection
-$conn->close();
+// Fetch user's short videos
+$shorts_query = "SELECT * FROM short_videos WHERE user_id = $user_id";
+$shorts_result = $conn->query($shorts_query);
 ?>
+<style>
+    .short-video video{
+        width: 100%;
+        background-color: #000000;
+        aspect-ratio: 9/16;
+    }
+</style>
 <main>
     <div class="account-container container">
         <div class="account-info flex flex-start">
@@ -73,42 +73,34 @@ $conn->close();
 
             <div id="profile-acc-videos" class="profile-acc-tab-content active-profile-acc-content">
                 <div class="video-content flex flex-wrap">
-                <?php
-                if ($long_videos_result->num_rows > 0) {
-                    while ($long_video = $long_videos_result->fetch_assoc()) {
-                        echo '<div class="video">
-                        <div class="thumbnail account">
-                            <img src="css/media/Images/Thumbnails/Dark Grey Minimalist Photo Travel YouTube Thumbnail.png"
-                                alt="Axtrion">
-                            <div class="play-button flex">
-                                <i class="fa-solid fa-play"></i>
-                                <span>12K</span>
-                            </div>
-                        </div>
-                        <div class="account-short-details flex">
-                            <div class="card">
-                                <span class="icon">
-                                    <i class="fa-solid fa-thumbs-up"></i>
-                                </span>
-                                <span class="text">
-                                    12
-                                </span>
-                            </div>
-                            <div class="card">
-                                <span class="icon">
-                                    <i class="fa-solid fa-comment"></i>
-                                </span>
-                                <span class="text">
-                                    24
-                                </span>
-                            </div>
-                        </div>
-                    </div>';
+                    <?php
+                    // Display long videos
+                    while ($video = $videos_result->fetch_assoc()) {
+                        echo '<div class="video">';
+                        echo '<div class="thumbnail account">';
+                        echo '<img src="' . $video['thumbnail_path'] . '" alt="' . $video['title'] . '">';
+                        echo '<div class="play-button flex">';
+                        echo '<i class="fa-solid fa-play"></i>';
+                        // echo '<span>' . $video['views'] . ' Views</span>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '<div class="account-short-details flex">';
+                        echo '<div class="card">';
+                        echo '<span class="icon">';
+                        echo '<i class="fa-solid fa-thumbs-up"></i>';
+                        echo '</span>';
+                        // echo '<span class="text">' . $video['likes'] . '</span>';
+                        echo '</div>';
+                        echo '<div class="card">';
+                        echo '<span class="icon">';
+                        echo '<i class="fa-solid fa-comment"></i>';
+                        echo '</span>';
+                        // echo '<span class="text">' . $video['comments'] . '</span>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '</div>';
                     }
-                } else {
-                    echo '<p>No long videos yet.</p>';
-                }
-                ?>
+                    ?>
                 </div>
             </div>
 
@@ -116,38 +108,33 @@ $conn->close();
                 <div class="shorts-content">
                     <div class="short-contents-videos flex">
                     <?php
-                    if ($shorts_videos_result->num_rows > 0) {
-                        while ($short_video = $shorts_videos_result->fetch_assoc()) {
-                            echo '<div class="short-video">
-                                    <div class="short-thumbnail account">
-                                        <img src="css/media/Images/Thumbnails/Shorts/apocalypse.jpg" alt="Axtrion">
-                                        <div class="play-button flex">
-                                            <i class="fa-solid fa-play"></i>
-                                            <span>12K</span>
-                                        </div>
-                                    </div>
-                                    <div class="account-short-details flex">
-                                        <div class="card">
-                                            <span class="icon">
-                                                <i class="fa-solid fa-thumbs-up"></i>
-                                            </span>
-                                            <span class="text">
-                                                12
-                                            </span>
-                                        </div>
-                                        <div class="card">
-                                            <span class="icon">
-                                                <i class="fa-solid fa-comment"></i>
-                                            </span>
-                                            <span class="text">
-                                                24
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>';
-                        }
-                    } else {
-                        echo '<p>No short videos yet.</p>';
+                    // Display short videos
+                    while ($short = $shorts_result->fetch_assoc()) {
+                        echo '<div class="short-video">';
+                        echo '<div class="short-thumbnail account">';
+                        echo '<video width="320" height="240" controls>';
+                        echo '<source src="' . $short['file_path'] . '" type="video/mp4">';
+                        echo '</video>';
+                        echo '<div class="play-button flex">';
+                        echo '<i class="fa-solid fa-play"></i>';
+                        // echo '<span>' . $short['views'] . ' Views</span>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '<div class="account-short-details flex">';
+                        echo '<div class="card">';
+                        echo '<span class="icon">';
+                        echo '<i class="fa-solid fa-thumbs-up"></i>';
+                        echo '</span>';
+                        // echo '<span class="text">' . $short['likes'] . '</span>';
+                        echo '</div>';
+                        echo '<div class="card">';
+                        echo '<span class="icon">';
+                        echo '<i class="fa-solid fa-comment"></i>';
+                        echo '</span>';
+                        // echo '<span class="text">' . $short['comments'] . '</span>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '</div>';
                     }
                     ?>
                     </div>
