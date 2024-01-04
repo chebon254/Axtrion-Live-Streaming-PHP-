@@ -1,8 +1,3 @@
-<style>
-    video{
-        height: calc(100vh - 110px) !important;
-    }
-</style>
 <?php
 session_start();
 include('header.php');

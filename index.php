@@ -36,6 +36,15 @@ function time_elapsed_string($datetime, $full = false)
     return $string ? implode(', ', $string) . ' ago' : 'just now';
 }
 ?>
+<style>
+    video{
+        height: 498px;
+        aspect-ratio: 16/9;
+        width: 100%;
+        vertical-align: middle;
+        border-radius: 10px;
+    }
+</style>
 <main>
     <div class="home-container container flex flex-start">
         <div class="side-nav">
@@ -94,7 +103,7 @@ function time_elapsed_string($datetime, $full = false)
                         echo '<div class="short-video">';
                         // Use a placeholder image for the snapshot
                         echo '<a href="shorts_videos.php?id=' . $short['id'] . '" class="thumbnail">';
-                        echo '<img src="get_snapshot.php?video_path=' . $short['file_path'] . '" alt="' . $short['description'] . '">';
+                        echo '<video style="pointet-events: none !important;" src="' . $short['file_path'] . '" alt="' . $short['title'] . '"></video>';
                         echo '</a>';
                         echo '<div class="short-details">';
                         echo '<h3>' . $short['title'] . '</h3>';
@@ -105,7 +114,7 @@ function time_elapsed_string($datetime, $full = false)
                     ?>
                 </div>
                 <div class="shorts-content-title">
-                    <a href="shorts.php" class="see-all-link">See All</a>
+                    <a href="shorts_videos.php" class="see-all-link">See All</a>
                 </div>
             </div>
         </div>
