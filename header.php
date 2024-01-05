@@ -44,13 +44,14 @@
             <div class="links flex fl-bt">
                 <div class="nav-pg-link flex fl-bt">
                     <!-- <a href="#">Home</a>  -->
-                    <a href="shorts_videos.php">Shorts</a>
                 </div>
                 <div class="nav-ac-access flex fl-bt">
                 <?php
                 // Check if the user is logged in
                 if (isset($_SESSION['user_id'])) {
-                    echo '<a href="upload.php">Upload</a>
+                    echo '
+                    <a href="livestream.php">Live</a>
+                    <a href="upload.php">Upload</a>
                     <div class="nav-ac-profile flex fl-bt">
                         <div class="notification-bell">
                             <div class="notifcation-status"></div>
